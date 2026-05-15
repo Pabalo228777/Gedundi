@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>S.T.A.L.K.E.R.SITE 0-2 | Интерактивная карта Зоны</title>
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <!-- Основные стили сайта -->
+  <link rel="stylesheet" href="style.css">
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+<!-- ЭКРАНЧИК С РЕКОМЕНДАЦИЯМИ ПО ЭКИПИРОВКЕ (ПРАВЫЙ ВЕРХНИЙ УГОЛ) -->
+<div class="gear-recommendation" id="gearRecommendation">
+  <div class="gear-panel">
+    <div class="gear-header" id="gearHeader">
+      <div class="gear-icon">🎒</div>
+      <div class="gear-title">РЕКОМЕНДАЦИИ ПО ВЫЛАЗКЕ</div>
+      <div class="gear-toggle" id="gearToggle">▼</div>
+    </div>
+    <div class="gear-content" id="gearContent">
+      <div class="threat-indicator" id="threatIndicator">
+        <div class="threat-icon">📍</div>
+        <div class="threat-text">
+          <span id="threatObjectName">НЕ ВЫБРАН ОБЪЕКТ</span><br>
+          <strong id="threatType">ОЖИДАНИЕ</strong>
+        </div>
+      </div>
+      <div id="gearListContainer">
+        <!-- Список экипировки будет добавлен через JS -->
+      </div>
+      <div class="gear-warning" id="gearWarning">
+        ⚠️ ВЫБЕРИТЕ ОБЪЕКТ НА КАРТЕ
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+  <div class="stalker-container">
+  <!-- Верхняя серая зона с названием -->
+  <div class="top-header">
+    <div class="site-title">
+      S.T.A.L.K.E.R.SITE 0-2
+    </div>
+  </div>
+
+  <div class="main-layout">
+    <!-- ЛЕВАЯ КОЛОНКА: окно поиска -->
+    <div class="search-area">
+      <div class="search-widget">
+        <div class="search-label">
+          <span>ПОИСКОВЫЙ МОДУЛЬ</span>
+        </div>
+        <div class="input-group">
+          <div class="input-row">
+            <div class="search-icon">🔍</div>
+            <input type="text" id="objectSearch" placeholder="Название объекта или координаты" autocomplete="off">
+            <button class="search-button" id="searchBtn">НАЙТИ</button>
+          </div>
+          <div class="search-note">
+            <span>🗺️ по названию: "Чайка", "Салют", "Живописный"</span>
+            <span>📍 по координатам: 55.5222, 37.3548</span>
+          </div>
+        </div>
+        <div class="info-text">
+          <p>📡 Введите название объекта, чтобы найти его на карте.</p>
+          <p>📍 Или введите координаты (широта, долгота) — маркер переместится.</p>
+        </div>
+      </div>
+         <!-- Блок с результатами поиска -->
+      <div id="searchResults" class="search-results"></div>
+      
+      <!-- Блок для фотографии объекта -->
+      <div id="photoContainer" class="photo-container" style="display: none;">
+        <div class="photo-title" id="photoTitle"></div>
+        <img id="objectPhoto" class="object-photo" src="" alt="Фото объекта">
+      </div>
+      
+      <div style="margin-top: 20px; font-size:0.7rem; padding-left: 6px; color:#777">
+        <span>⚠️ КАРТА АКТИВНА: маркеры заброшенных объектов</span>
+      </div>
+    </div>
+
+    <!-- ПРАВАЯ ЧАСТЬ: ИНТЕРАКТИВНАЯ КАРТА -->
+    <div class="map-container">
+      <div id="stalkerMap"></div>
+    </div>
+  </div>
+  
+  <div class="site-footer">
+    [ S.T.A.L.K.E.R.SITE ver 0.2 ] — интерактивная карта с объектами. Поиск по названию или координатам.
+  </div>
+</div>
+
+<script src="script.js"></script>
+
+<!-- ДОЗИМЕТР В ПРАВОМ НИЖНЕМ УГЛУ -->
+<div class="dosimeter-container" id="dosimeterContainer">
+  <div class="dosimeter" id="dosimeter">
+    <div class="dosimeter-header">
+      <div class="dosimeter-icon">☢️</div>
+      <div class="dosimeter-title">ДОЗИМЕТР ГЕЙГЕРА</div>
+    </div>
+    <div class="dosimeter-value" id="radiationValue">0.00</div>
+    <div class="dosimeter-status" id="radiationStatus">
+      <span>🟢 ФОН В НОРМЕ</span>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
