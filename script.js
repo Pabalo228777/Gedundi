@@ -102,7 +102,7 @@ const objectsDB = [
 
 
 
-    // Соответствие названий объектов и их фотографий
+    
 const objectPhotos = {
     "Пионерлагерь Чайка": "chaika.jpg",
     "Пионерлагерь Живописный": "zhivopisny.jpg",
@@ -117,7 +117,7 @@ const objectPhotos = {
     "Дол лесные голоса": "Dol.png"
 };
 
-// Функция показа фото
+
 function showPhoto(objectName) {
     const photoContainer = document.getElementById('photoContainer');
     const photoTitle = document.getElementById('photoTitle');
@@ -131,36 +131,36 @@ function showPhoto(objectName) {
         objectPhoto.alt = objectName;
         photoContainer.style.display = 'block';
         
-        // Добавляем анимацию появления
+
         photoContainer.style.animation = 'fadeIn 0.3s ease';
     } else {
-        // Если фото нет, скрываем контейнер
+
         if (photoContainer) photoContainer.style.display = 'none';
     }
 }
 
-// Функция скрытия фото
+
 function hidePhoto() {
     const photoContainer = document.getElementById('photoContainer');
     if (photoContainer) photoContainer.style.display = 'none';
 }
 
-// Глобальная переменная карты
+
 let stalkerMap;
 let markers = [];
 
-// Инициализация карты при загрузке страницы
+
 function initMap() {
-    // Центр карты — примерно между объектами
+
     stalkerMap = L.map('stalkerMap').setView([55.0, 36.8], 8);
     
-    // Спутниковый слой
+
     const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
         attribution: '© ESRI, Maxar, Earthstar Geographics',
         maxZoom: 19
     });
     
-    // Обычная карта
+    
     const streetMap = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; CartoDB',
         subdomains: 'abcd',
@@ -169,22 +169,22 @@ function initMap() {
     
     streetMap.addTo(stalkerMap);
     
-    // Переключатель слоёв
+    
     L.control.layers({
         "🗺️ Обычная карта": streetMap,
         "🛰️ Спутник": satellite
     }).addTo(stalkerMap);
     
-    // Добавляем маркеры из базы
+    
     addMarkersFromDB();
 }
 
-// Добавление маркеров на карту
+
 function addMarkersFromDB() {
     objectsDB.forEach(obj => {
         const marker = L.marker([obj.lat, obj.lng]).addTo(stalkerMap);
         
-        // Содержимое всплывающего окна с кнопкой фото
+       
         const popupContent = `
             <b>🏚️ ${obj.name}</b><br>
             📍 ${obj.coords}<br>
@@ -196,12 +196,12 @@ function addMarkersFromDB() {
         
         marker.bindPopup(popupContent);
         
-        // При клике на маркер показываем фото
+        
         marker.on('click', () => {
             showPhoto(obj.name);
         });
         
-        // Сохраняем маркер с ссылкой на объект
+       
         markers.push({
             marker: marker,
             data: obj
@@ -209,7 +209,7 @@ function addMarkersFromDB() {
     });
 }
 
-// Поиск объекта и центровка карты
+
 function searchAndFlyTo(query) {
     if (!query || query.trim() === "") {
         displayResults([]);
@@ -218,7 +218,7 @@ function searchAndFlyTo(query) {
     
     query = query.toLowerCase().trim();
     
-    // Ищем по названию или координатам
+   
     const results = objectsDB.filter(obj => {
         const nameMatch = obj.name.toLowerCase().includes(query);
         const coordsMatch = obj.coords.toLowerCase().includes(query);
@@ -227,34 +227,34 @@ function searchAndFlyTo(query) {
     
     displayResults(results);
     
-    // Если нашли ровно один объект — летим к нему
+    
     if (results.length === 1) {
         const obj = results[0];
         stalkerMap.flyTo([obj.lat, obj.lng], 14, {
             duration: 1.5
         });
         
-        // ПОКАЗЫВАЕМ ФОТО НАЙДЕННОГО ОБЪЕКТА
+       
         showPhoto(obj.name);
         
-        // Открываем попап у соответствующего маркера
+       
         const foundMarker = markers.find(m => m.data.name === obj.name);
         if (foundMarker) {
             foundMarker.marker.openPopup();
         }
     } 
-    // Если несколько результатов — центрируем, чтобы показать все
+   
     else if (results.length > 1) {
         const bounds = L.latLngBounds(results.map(r => [r.lat, r.lng]));
         stalkerMap.flyToBounds(bounds, { padding: [50, 50], duration: 1.5 });
-        // При нескольких результатах скрываем фото
+        
         hidePhoto();
     }
     else {
-        // Ничего не нашли
+        
         hidePhoto();
         if (query.length > 0) {
-            // Может быть пользователь ввёл координаты вручную? Пробуем распарсить "широта, долгота"
+            
             const coordMatch = query.match(/(-?\d+\.?\d*)[,\s]+(-?\d+\.?\d*)/);
             if (coordMatch) {
                 const lat = parseFloat(coordMatch[1]);
@@ -267,7 +267,7 @@ function searchAndFlyTo(query) {
     }
 }
 
-// Отображение результатов поиска в левой панели
+
 function displayResults(results) {
     const resultsContainer = document.getElementById('searchResults');
     
@@ -296,7 +296,7 @@ function displayResults(results) {
     
     resultsContainer.innerHTML = html;
     
-    // Добавляем обработчики кликов на результаты
+
     document.querySelectorAll('.result-item').forEach(item => {
         item.addEventListener('click', () => {
             const lat = parseFloat(item.dataset.lat);
@@ -305,10 +305,10 @@ function displayResults(results) {
             
             stalkerMap.flyTo([lat, lng], 14, { duration: 1 });
             
-            // Показываем фото объекта
+           
             showPhoto(name);
             
-            // Открыть попап нужного маркера
+            
             const foundMarker = markers.find(m => m.data.name === name);
             if (foundMarker) {
                 foundMarker.marker.openPopup();
@@ -317,19 +317,19 @@ function displayResults(results) {
     });
 }
 
-// Обработчик поиска
+
 function performSearch() {
     const searchInput = document.getElementById('objectSearch');
     const query = searchInput.value;
     searchAndFlyTo(query);
 }
 
-// Ожидание загрузки DOM
+
 document.addEventListener('DOMContentLoaded', function() {
-    // Инициализируем карту
+    
     initMap();
     
-    // Навешиваем обработчики на кнопку и поле ввода
+    
     const searchBtn = document.getElementById('searchBtn');
     const searchInput = document.getElementById('objectSearch');
     
@@ -345,27 +345,27 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-// ===== ДОЗИМЕТР =====
-// Данные об уровне радиации для каждого объекта (в мкЗв/ч - микрозиверт в час)
+
+
 const radiationData = {
-    "Пионерлагерь Чайка": 0.12,           // Нормальный фон
-    "Пионерлагерь Живописный": 0.35,      // Повышенный
-    "Заброшенная школа": 0.08,            // Норма
-    "Летний детский сад": 0.15,           // Норма
-    "Школа номер 572": 0.42,              // Повышенный
-    "85-й ремонтный завод": 1.25,         // Опасно
-    "Военный городок воинской части № 52096": 2.8,  // Очень опасно! (превышен фон)
-    "поселок Дальний клин": 0.55          // Повышенный (может быть радиация)
+    "Пионерлагерь Чайка": 0.12,           
+    "Пионерлагерь Живописный": 0.35,      
+    "Заброшенная школа": 0.08,            
+    "Летний детский сад": 0.15,           
+    "Школа номер 572": 0.42,              
+    "85-й ремонтный завод": 1.25,         
+    "Военный городок воинской части № 52096": 2.8,  
+    "поселок Дальний клин": 0.55          
 };
 
-// Фоновый уровень радиации (мкЗв/ч)
+
 const BACKGROUND_RADIATION = 0.10;
 
-// Текущий отображаемый уровень радиации
+
 let currentRadiation = BACKGROUND_RADIATION;
 let radiationInterval = null;
 
-// Получить статус радиации
+
 function getRadiationStatus(value) {
     if (value < 0.20) {
         return { text: "✅ ФОН В НОРМЕ", color: "normal", icon: "🟢" };
@@ -378,7 +378,7 @@ function getRadiationStatus(value) {
     }
 }
 
-// Обновить отображение дозиметра
+
 function updateDosimeter(radiationValue) {
     const valueElement = document.getElementById('radiationValue');
     const statusElement = document.getElementById('radiationStatus');
@@ -386,27 +386,26 @@ function updateDosimeter(radiationValue) {
     
     if (!valueElement || !statusElement) return;
     
-    // Форматируем число (2 знака после запятой)
+ 
     const formattedValue = radiationValue.toFixed(2);
     valueElement.textContent = `${formattedValue}`;
     
-    // Получаем статус
+   
     const status = getRadiationStatus(radiationValue);
     
-    // Обновляем класс для цвета
+
     valueElement.className = `dosimeter-value ${status.color}`;
     
-    // Обновляем статус
+
     statusElement.innerHTML = `<span>${status.icon} ${status.text}</span>`;
     
-    // Добавляем/убираем анимацию тревоги
+
     if (radiationValue >= 0.50) {
         dosimeterElement.classList.add('alarm');
     } else {
         dosimeterElement.classList.remove('alarm');
     }
     
-    // Добавляем случайное потрескивание для эффекта Гейгера (звук не добавляем, только визуал)
     if (radiationValue >= 0.50) {
         valueElement.style.animation = 'none';
         setTimeout(() => {
@@ -415,13 +414,13 @@ function updateDosimeter(radiationValue) {
     }
 }
 
-// Установить радиацию для конкретного объекта
+
 function setRadiationForObject(objectName) {
     const radiation = radiationData[objectName] || BACKGROUND_RADIATION;
     currentRadiation = radiation;
     updateDosimeter(currentRadiation);
     
-    // Добавляем эффект "щелчка" при смене показаний
+
     const dosimeter = document.getElementById('dosimeter');
     if (dosimeter) {
         dosimeter.style.transform = 'scale(0.98)';
@@ -431,23 +430,21 @@ function setRadiationForObject(objectName) {
     }
 }
 
-// Сбросить на фоновую радиацию
+
 function resetRadiation() {
     currentRadiation = BACKGROUND_RADIATION;
     updateDosimeter(currentRadiation);
 }
 
-// Добавляем симуляцию случайных флуктуаций радиации
+
 function startRandomFluctuation() {
     if (radiationInterval) clearInterval(radiationInterval);
     
     radiationInterval = setInterval(() => {
-        // Если текущая радиация выше фоновой, плавно возвращаемся к фоновой
         if (currentRadiation > BACKGROUND_RADIATION + 0.05) {
             currentRadiation = Math.max(BACKGROUND_RADIATION, currentRadiation - 0.01);
             updateDosimeter(currentRadiation);
         } else if (Math.random() < 0.3) {
-            // Случайные флуктуации в пределах фона
             const fluctuation = (Math.random() - 0.5) * 0.03;
             let newValue = currentRadiation + fluctuation;
             newValue = Math.max(0, Math.min(0.3, newValue));
@@ -459,22 +456,21 @@ function startRandomFluctuation() {
     }, 3000);
 }
 
-// Модифицируем существующую функцию showPhoto
+
 const originalShowPhoto = showPhoto;
 window.showPhoto = function(objectName) {
     originalShowPhoto(objectName);
     setRadiationForObject(objectName);
 };
 
-// Модифицируем существующую функцию hidePhoto
+
 const originalHidePhoto = hidePhoto;
 window.hidePhoto = function() {
     originalHidePhoto();
     resetRadiation();
 };
 
-// Добавляем обработчики для кликов по маркерам и результатам поиска
-// Модифицируем функцию addMarkersFromDB для добавления радиации при клике
+
 const originalAddMarkersFromDB = addMarkersFromDB;
 window.addMarkersFromDB = function() {
     objectsDB.forEach(obj => {
@@ -505,7 +501,7 @@ window.addMarkersFromDB = function() {
     });
 };
 
-// Переопределяем функцию displayResults для добавления радиации
+
 const originalDisplayResults = displayResults;
 window.displayResults = function(results) {
     const resultsContainer = document.getElementById('searchResults');
@@ -561,10 +557,10 @@ window.displayResults = function(results) {
     });
 };
 
-// Запускаем эффект потрескивания и случайных флуктуаций
+
 startRandomFluctuation();
 
-// Добавляем вспомогательную функцию для ручного тестирования
+
 window.debugSetRadiation = function(value) {
     currentRadiation = value;
     updateDosimeter(currentRadiation);
@@ -575,8 +571,7 @@ console.log('☢️ Дозиметр активирован! Радиация о
 
 
 
-// ===== СИСТЕМА РЕКОМЕНДАЦИЙ ПО ЭКИПИРОВКЕ =====
-// Определение типов угроз для каждого объекта
+
 const threatLevels = {
     "Пионерлагерь Чайка": {
         type: "normal",
@@ -628,27 +623,27 @@ const threatLevels = {
     }
 };
 
-// Базовый набор экипировки для обычной вылазки
+
 const normalGear = [
     { name: "ПЕРЧАТКИ",  desc: "защита рук от острых предметов" },
     { name: "ФОНАРИК",  desc: "освещение тёмных помещений" },
     { name: "ПОВЕРБАНК",  desc: "зарядка для устройств" }
 ];
 
-// Дополнительная экипировка при химической угрозе
+
 const chemicalGear = [
     { name: "РЕСПИРАТОР",  desc: "защита органов дыхания" },
     { name: "БЕРЦЫ", desc: "высокая обувь для защиты ног" }
 ];
 
-// Дополнительная экипировка при радиационной угрозе
+
 const radiationGear = [
     { name: "ДОЗИМЕТР", icon: "☢️", desc: "контроль уровня радиации" },
     { name: "ПРОТИВОГАЗ",  desc: "защита от радиоактивной пыли" },
     { name: "СМЕННЫЕ ФИЛЬТРЫ",  desc: "для противогаза" }
 ];
 
-// Функция получения экипировки по типу угрозы
+
 function getGearByThreatType(threatType) {
     let gear = [...normalGear]; // Копируем базовый набор
     
@@ -661,7 +656,7 @@ function getGearByThreatType(threatType) {
     return gear;
 }
 
-// Обновление панели рекомендаций
+
 function updateGearRecommendation(objectName) {
     const threatData = threatLevels[objectName];
     const gearContainer = document.getElementById('gearListContainer');
@@ -672,7 +667,7 @@ function updateGearRecommendation(objectName) {
     if (!gearContainer) return;
     
     if (!threatData) {
-        // Объект не найден в базе угроз
+ 
         threatObjectSpan.textContent = objectName || "НЕ ВЫБРАН ОБЪЕКТ";
         threatTypeSpan.textContent = "НЕТ ДАННЫХ";
         gearContainer.innerHTML = `
@@ -684,17 +679,17 @@ function updateGearRecommendation(objectName) {
         return;
     }
     
-    // Обновляем информацию об угрозе
+
     threatObjectSpan.textContent = objectName;
     threatTypeSpan.textContent = threatData.name;
     
-    // Получаем экипировку
+
     const gear = getGearByThreatType(threatData.type);
     
-    // Формируем HTML списка экипировки
+
     let gearHtml = '';
     
-    // Разделяем по категориям
+
     const normalItems = gear.filter(g => !chemicalGear.some(cg => cg.name === g.name) && !radiationGear.some(rg => rg.name === g.name));
     const chemicalItems = gear.filter(g => chemicalGear.some(cg => cg.name === g.name));
     const radiationItems = gear.filter(g => radiationGear.some(rg => rg.name === g.name));
@@ -737,12 +732,12 @@ function updateGearRecommendation(objectName) {
     
     gearContainer.innerHTML = `<ul class="gear-list">${gearHtml}</ul>`;
     
-    // Обновляем предупреждение
+
     if (gearWarning) {
         gearWarning.innerHTML = `⚠️ ${threatData.warning}`;
         gearWarning.style.display = 'block';
         
-        // Меняем цвет предупреждения в зависимости от угрозы
+
         if (threatData.type === 'radiation') {
             gearWarning.style.background = 'rgba(255,50,50,0.25)';
             gearWarning.style.color = '#ff6666';
@@ -759,7 +754,7 @@ function updateGearRecommendation(objectName) {
     }
 }
 
-// Сброс рекомендаций (когда объект не выбран)
+
 function resetGearRecommendation() {
     const gearContainer = document.getElementById('gearListContainer');
     const threatObjectSpan = document.getElementById('threatObjectName');
@@ -786,7 +781,7 @@ function resetGearRecommendation() {
     }
 }
 
-// Переопределяем функцию showPhoto для обновления рекомендаций
+
 const originalShowPhotoForGear = window.showPhoto;
 if (originalShowPhotoForGear) {
     window.showPhoto = function(objectName) {
@@ -795,7 +790,7 @@ if (originalShowPhotoForGear) {
     };
 }
 
-// Переопределяем функцию hidePhoto для сброса рекомендаций
+
 const originalHidePhotoForGear = window.hidePhoto;
 if (originalHidePhotoForGear) {
     window.hidePhoto = function() {
@@ -804,19 +799,17 @@ if (originalHidePhotoForGear) {
     };
 }
 
-// Добавляем обработчики для кликов по маркерам через существующую функцию
-// Модифицируем инициализацию маркеров
+
 const originalAddMarkersForGear = window.addMarkersFromDB;
 if (originalAddMarkersForGear) {
     window.addMarkersFromDB = function() {
-        // Вызываем оригинальную функцию (если она ещё не была вызвана)
+
         if (typeof originalAddMarkersForGear === 'function') {
-            // Но чтобы не дублировать маркеры, нужно быть осторожным
-            // Лучше добавить обработчик через существующие маркеры
+
         }
         originalAddMarkersForGear();
         
-        // Добавляем обработчики к существующим маркерам
+
         markers.forEach(m => {
             const originalOnClick = m.marker.options.onClick;
             m.marker.on('click', () => {
@@ -826,7 +819,7 @@ if (originalAddMarkersForGear) {
     };
 }
 
-// Инициализация сворачивания панели
+
 function initGearPanelCollapse() {
     const gearHeader = document.getElementById('gearHeader');
     const gearContent = document.getElementById('gearContent');
@@ -842,22 +835,22 @@ function initGearPanelCollapse() {
     }
 }
 
-// Запускаем инициализацию панели
+
 setTimeout(() => {
     initGearPanelCollapse();
     resetGearRecommendation();
 }, 100);
 
-// Модифицируем функцию displayResults для обновления рекомендаций при клике на результат
+
 const originalDisplayResultsForGear = window.displayResults;
 if (originalDisplayResultsForGear) {
     window.displayResults = function(results) {
         originalDisplayResultsForGear(results);
         
-        // Добавляем обработчики для новых элементов
+
         setTimeout(() => {
             document.querySelectorAll('.result-item').forEach(item => {
-                // Удаляем старый обработчик, если есть, чтобы не дублировать
+
                 const newItem = item.cloneNode(true);
                 item.parentNode.replaceChild(newItem, item);
                 
@@ -870,7 +863,7 @@ if (originalDisplayResultsForGear) {
     };
 }
 
-// Добавляем глобальную функцию для ручного обновления (для отладки)
+
 window.debugGear = function(objectName) {
     updateGearRecommendation(objectName);
 };
