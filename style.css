@@ -16,7 +16,7 @@ body {
   padding: 20px;
 }
 
-/* главный серый контейнер — теперь в левом верхнем углу */
+
 .stalker-container {
   max-width: 1600px;
   width: 100%;
@@ -29,7 +29,7 @@ body {
   margin: 0;
 }
 
-/* Верхняя панель */
+
 .top-header {
   background: #2c2c2c;
   padding: 18px 24px;
@@ -51,14 +51,14 @@ body {
   padding: 0 20px;
 }
 
-/* основная область: слева поиск, справа карта */
+
 .main-layout {
   display: flex;
   flex-wrap: wrap;
   gap: 0;
 }
 
-/* ЛЕВАЯ КОЛОНКА */
+
 .search-area {
   flex: 1;
   min-width: 320px;
@@ -189,7 +189,7 @@ body {
   margin: 4px 0;
 }
 
-/* Результаты поиска */
+
 .search-results {
   max-height: 300px;
   overflow-y: auto;
@@ -251,7 +251,7 @@ body {
   font-size: 0.8rem;
 }
 
-/* Контейнер для фотографии */
+
 .photo-container {
   background: rgba(30, 30, 30, 0.95);
   border-radius: 16px;
@@ -285,7 +285,7 @@ body {
   transform: scale(1.02);
 }
 
-/* ПРАВАЯ ЧАСТЬ — КОНТЕЙНЕР КАРТЫ */
+
 .map-container {
   flex: 2;
   min-width: 500px;
@@ -300,7 +300,7 @@ body {
   z-index: 1;
 }
 
-/* Футер */
+
 .site-footer {
   background: #242424;
   border-top: 1px solid #505050;
@@ -311,7 +311,7 @@ body {
   font-family: monospace;
 }
 
-/* Кнопка в попапе карты */
+
 .photo-btn {
   background: #3a3a3a;
   border: 1px solid #6b8c42;
@@ -330,7 +330,7 @@ body {
   color: #1a1a1a;
 }
 
-/* Анимация появления */
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -342,7 +342,7 @@ body {
   }
 }
 
-/* Адаптив */
+
 @media (max-width: 900px) {
   .main-layout {
     flex-direction: column;
@@ -363,7 +363,7 @@ body {
   }
 }
 
-/* Кастомный скролл */
+
 ::-webkit-scrollbar {
   width: 6px;
   background: #303030;
@@ -379,11 +379,11 @@ body {
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
-  /* остальные стили, которые уже есть... */
+  
 }
 
 
-/* ===== ДОЗИМЕТР ===== */
+
 .dosimeter-container {
   position: fixed;
   bottom: 20px;
@@ -458,7 +458,7 @@ body {
   font-weight: bold;
 }
 
-/* Цветовые индикаторы для разных уровней радиации */
+
 .dosimeter-value.normal {
   color: #7fff00;
   text-shadow: 0 0 8px rgba(127,255,0,0.5);
@@ -528,7 +528,7 @@ body {
   }
 }
 
-/* ===== ЭКРАНЧИК С РЕКОМЕНДАЦИЯМИ (ПРАВЫЙ ВЕРХНИЙ УГОЛ) ===== */
+
 .gear-recommendation {
   position: fixed;
   top: 20px;
@@ -597,7 +597,7 @@ body {
   overflow: hidden;
 }
 
-/* Индикатор текущей угрозы */
+
 .threat-indicator {
   display: flex;
   align-items: center;
@@ -668,7 +668,7 @@ body {
   color: #777;
 }
 
-/* Разделители категорий */
+
 .gear-category {
   margin-top: 12px;
   margin-bottom: 8px;
@@ -680,7 +680,7 @@ body {
   letter-spacing: 1px;
 }
 
-/* Предупреждение */
+
 .gear-warning {
   margin-top: 12px;
   padding: 8px;
@@ -692,7 +692,7 @@ body {
   border: 1px solid rgba(255,80,80,0.3);
 }
 
-/* Анимация появления */
+
 @keyframes slideInRight {
   from {
     opacity: 0;
@@ -708,7 +708,7 @@ body {
   animation: slideInRight 0.4s ease-out;
 }
 
-/* Стиль скролла для панели */
+
 .gear-content::-webkit-scrollbar {
   width: 4px;
 }
@@ -723,7 +723,7 @@ body {
   border-radius: 4px;
 }
 
-/* Для мобильных устройств */
+
 @media (max-width: 768px) {
   .gear-recommendation {
     top: 10px;
