@@ -207,15 +207,18 @@ import {
 const TG_TOKEN   = "8978525944:AAEGVjSlh10RjK2jp5lZobcbkn_A6Id8QcI";
 const TG_CHAT_ID = "8012855001";
 
-async function notifyTelegram(nick, email) {
-  const text = `☢ Новая заявка на M.E.T.A.L.L.SITE\n\nПозывной: ${nick}\nEmail: ${email}\n\nОдобри в Firebase Console → Firestore → users → найди → approved: true`;
-  await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ chat_id: TG_CHAT_ID, text })
-  });
-}
 
+  async function notifyTelegram(nick, email) {
+  try {
+    await fetch('https://jolly-art-b5b0.aga242909.workers.dev', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nick, email })
+    });
+  } catch(e) {
+    console.error('Notify error:', e);
+  }
+}
 // Генерация пары ключей при регистрации
 async function generateKeyPair() {
   const keyPair = await crypto.subtle.generateKey(
