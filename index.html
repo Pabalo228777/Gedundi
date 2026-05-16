@@ -428,6 +428,43 @@ async function checkUnread() {
     $('stalkerNotif').style.display = (hasUnread && !panelOpen) ? '' : 'none';
   } catch(e) {}
 }
+
+// Перетаскивание окна чата
+(function() {
+  const win = $('spChatWindow');
+  const header = win.querySelector('.sp-chat-header');
+  let isDragging = false, startX, startY, startRight, startBottom;
+
+  header.style.cursor = 'grab';
+
+  header.addEventListener('mousedown', e => {
+    isDragging = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    const rect = win.getBoundingClientRect();
+    startRight  = window.innerWidth  - rect.right;
+    startBottom = window.innerHeight - rect.bottom;
+    header.style.cursor = 'grabbing';
+    e.preventDefault();
+  });
+
+  document.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+    const dx = startX - e.clientX;
+    const dy = startY - e.clientY;
+    win.style.right  = (startRight  + dx) + 'px';
+    win.style.bottom = (startBottom + dy) + 'px';
+  });
+
+  document.addEventListener('mouseup', () => {
+    isDragging = false;
+    header.style.cursor = 'grab';
+  });
+})();
+
+
+
+
 </script>
  
 </body>
