@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>S.T.A.L.K.E.R.SITE 0-2 | Интерактивная карта Зоны</title>
-  
+  <title>M.E.T.A.L.L.SITE 0-2 |</title>
+
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
- 
+
   <link rel="stylesheet" href="style.css">
-  
+
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
@@ -29,7 +29,7 @@
         </div>
       </div>
       <div id="gearListContainer">
-        <!-- Список экипировки будет добавлен через JS -->
+
       </div>
       <div class="gear-warning" id="gearWarning">
         ⚠️ ВЫБЕРИТЕ ОБЪЕКТ НА КАРТЕ
@@ -41,15 +41,15 @@
 
 
   <div class="stalker-container">
-  
+
   <div class="top-header">
     <div class="site-title">
-      S.T.A.L.K.E.R.SITE 0-2
+      M.E.T.A.L.L.SITE
     </div>
   </div>
 
   <div class="main-layout">
-    
+
     <div class="search-area">
       <div class="search-widget">
         <div class="search-label">
@@ -71,10 +71,10 @@
           <p>📍 Или введите координаты (широта, долгота) — маркер переместится.</p>
         </div>
       </div>
-         
+
       <div id="searchResults" class="search-results"></div>
       
-      
+
       <div id="photoContainer" class="photo-container" style="display: none;">
         <div class="photo-title" id="photoTitle"></div>
         <img id="objectPhoto" class="object-photo" src="" alt="Фото объекта">
@@ -85,16 +85,13 @@
       </div>
     </div>
 
-    
+
     <div class="map-container">
       <div id="stalkerMap"></div>
     </div>
   </div>
   
-  <div class="site-footer">
-    [ S.T.A.L.K.E.R.SITE ver 0.2 ] — интерактивная карта с объектами. Поиск по названию или координатам.
-  </div>
-</div>
+
 
 <script src="script.js"></script>
 
@@ -111,6 +108,349 @@
     </div>
   </div>
 </div>
+
+
+
+
+
+
+<div class="stalkers-btn-wrap" id="stalkersBtnWrap">
+  <div class="stalkers-notif" id="stalkerNotif" style="display:none">!</div>
+  <button class="stalkers-btn" id="stalkersPanelBtn" title="Сталкеры онлайн">
+
+    <img src="https://via.placeholder.com/44x44/1a1a1a/c8a84b?text=S" 
+         id="stalkersBtnImg"
+         alt="Сталкеры" 
+         style="width:44px;height:44px;border-radius:4px;object-fit:cover;">
+  </button>
+</div>
+ 
+
+<div class="stalkers-panel" id="stalkersPanelBox" style="display:none">
+  <div class="sp-header">
+    <span class="sp-title">◈ СТАЛКЕРЫ</span>
+    <button class="sp-close" id="spClose">✕</button>
+  </div>
+ 
+
+  <div id="spAuth">
+    <div class="sp-auth-tabs">
+      <button class="sp-tab active" id="tabLogin" onclick="spShowTab('login')">ВХОД</button>
+      <button class="sp-tab" id="tabReg" onclick="spShowTab('reg')">РЕГИСТРАЦИЯ</button>
+    </div>
+    <div id="spLoginForm">
+      <input class="sp-input" id="spLoginEmail" type="email" placeholder="Email">
+      <input class="sp-input" id="spLoginPass" type="password" placeholder="Пароль">
+      <button class="sp-btn" id="spLoginBtn">ВОЙТИ В ЗОНУ</button>
+      <div class="sp-err" id="spLoginErr"></div>
+    </div>
+    <div id="spRegForm" style="display:none">
+      <input class="sp-input" id="spRegNick" type="text" placeholder="Позывной (никнейм)">
+      <input class="sp-input" id="spRegEmail" type="email" placeholder="Email">
+      <input class="sp-input" id="spRegPass" type="password" placeholder="Пароль (мин. 6 символов)">
+      <button class="sp-btn" id="spRegBtn">ЗАРЕГИСТРИРОВАТЬСЯ</button>
+      <div class="sp-err" id="spRegErr"></div>
+    </div>
+  </div>
+ 
+
+  <div id="spMain" style="display:none">
+    <div class="sp-me">
+      <span id="spMyNick">...</span>
+      <button class="sp-logout" id="spLogout">выйти</button>
+    </div>
+    <div class="sp-stalkers-list" id="spStalkersList">
+      <div class="sp-loading">Сканирование Зоны...</div>
+    </div>
+  </div>
+</div>
+ 
+
+<div class="sp-chat-window" id="spChatWindow" style="display:none">
+  <div class="sp-chat-header">
+    <span id="spChatWith">...</span>
+    <button class="sp-close" id="spChatClose">✕</button>
+  </div>
+  <div class="sp-chat-messages" id="spChatMessages"></div>
+  <div class="sp-chat-input-row">
+    <input class="sp-chat-input" id="spChatInput" placeholder="Сообщение...">
+    <button class="sp-chat-send" id="spChatSend">▶</button>
+  </div>
+</div>
+ 
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+  updateProfile
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  getFirestore,
+  collection,
+  doc,
+  setDoc,
+  getDocs,
+  addDoc,
+  query,
+  orderBy,
+  onSnapshot,
+  serverTimestamp,
+  where,
+  updateDoc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+ 
+
+const firebaseConfig = {
+  apiKey: "ТВОЙ_API_KEY",
+  authDomain: "ТВОЙ_ПРОЕКТ.firebaseapp.com",
+  projectId: "ТВОЙ_ПРОЕКТ_ID",
+  storageBucket: "ТВОЙ_ПРОЕКТ.appspot.com",
+  messagingSenderId: "ТВОЙ_SENDER_ID",
+  appId: "ТВОЙ_APP_ID"
+};
+
+ 
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+ 
+let currentUser = null;
+let activeChatUid = null;
+let activeChatNick = null;
+let chatUnsubscribe = null;
+let allUnsubscribe = null;
+ 
+
+ 
+function $(id) { return document.getElementById(id); }
+ 
+function spShowTab(tab) {
+  $('spLoginForm').style.display = tab === 'login' ? '' : 'none';
+  $('spRegForm').style.display   = tab === 'reg'   ? '' : 'none';
+  $('tabLogin').classList.toggle('active', tab === 'login');
+  $('tabReg').classList.toggle('active',   tab === 'reg');
+}
+ 
+function showPanel(loggedIn) {
+  $('spAuth').style.display = loggedIn ? 'none' : '';
+  $('spMain').style.display = loggedIn ? ''     : 'none';
+}
+ 
+
+ 
+$('stalkersPanelBtn').onclick = () => {
+  const box = $('stalkersPanelBox');
+  box.style.display = box.style.display === 'none' ? '' : 'none';
+  $('stalkerNotif').style.display = 'none'; 
+};
+$('spClose').onclick = () => { $('stalkersPanelBox').style.display = 'none'; };
+ 
+
+ 
+$('spRegBtn').onclick = async () => {
+  const nick  = $('spRegNick').value.trim();
+  const email = $('spRegEmail').value.trim();
+  const pass  = $('spRegPass').value;
+  $('spRegErr').textContent = '';
+  if (!nick) { $('spRegErr').textContent = 'Введи позывной'; return; }
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, pass);
+    await updateProfile(cred.user, { displayName: nick });
+    await setDoc(doc(db, 'users', cred.user.uid), {
+      uid: cred.user.uid,
+      nick,
+      email,
+      createdAt: serverTimestamp()
+    });
+  } catch(e) {
+    $('spRegErr').textContent = firebaseError(e.code);
+  }
+};
+ 
+
+ 
+$('spLoginBtn').onclick = async () => {
+  $('spLoginErr').textContent = '';
+  try {
+    await signInWithEmailAndPassword(auth, $('spLoginEmail').value, $('spLoginPass').value);
+  } catch(e) {
+    $('spLoginErr').textContent = firebaseError(e.code);
+  }
+};
+ 
+
+ 
+$('spLogout').onclick = () => {
+  signOut(auth);
+  $('spChatWindow').style.display = 'none';
+  if (chatUnsubscribe) chatUnsubscribe();
+};
+ 
+
+ 
+onAuthStateChanged(auth, async (user) => {
+  currentUser = user;
+  if (user) {
+    showPanel(true);
+    $('spMyNick').textContent = user.displayName || user.email;
+    loadStalkers();
+    listenForNewMessages();
+  } else {
+    showPanel(false);
+    $('spStalkersList').innerHTML = '<div class="sp-loading">Войди чтобы видеть сталкеров</div>';
+    if (allUnsubscribe) allUnsubscribe();
+  }
+});
+ 
+
+ 
+async function loadStalkers() {
+  const list = $('spStalkersList');
+  list.innerHTML = '<div class="sp-loading">Сканирование...</div>';
+  try {
+    const snap = await getDocs(collection(db, 'users'));
+    list.innerHTML = '';
+    snap.forEach(d => {
+      const u = d.data();
+      if (u.uid === currentUser.uid) return; 
+      const row = document.createElement('div');
+      row.className = 'sp-stalker-row';
+      row.innerHTML = `
+        <span class="sp-nick">☢ ${u.nick}</span>
+        <button class="sp-chat-btn" data-uid="${u.uid}" data-nick="${u.nick}">ЧАТ</button>
+      `;
+      list.appendChild(row);
+    });
+    if (!list.children.length) {
+      list.innerHTML = '<div class="sp-loading">Других сталкеров нет</div>';
+    }
+
+    list.querySelectorAll('.sp-chat-btn').forEach(btn => {
+      btn.onclick = () => openChat(btn.dataset.uid, btn.dataset.nick);
+    });
+  } catch(e) {
+    list.innerHTML = '<div class="sp-loading">Ошибка загрузки</div>';
+  }
+}
+ 
+
+ 
+function openChat(uid, nick) {
+  if (chatUnsubscribe) chatUnsubscribe();
+  activeChatUid  = uid;
+  activeChatNick = nick;
+  $('spChatWith').textContent = '◈ ' + nick;
+  $('spChatMessages').innerHTML = '';
+  $('spChatWindow').style.display = '';
+  $('stalkersPanelBox').style.display = 'none';
+ 
+  const chatId = getChatId(currentUser.uid, uid);
+  const q = query(
+    collection(db, 'chats', chatId, 'messages'),
+    orderBy('time')
+  );
+  chatUnsubscribe = onSnapshot(q, snap => {
+    $('spChatMessages').innerHTML = '';
+    snap.forEach(d => renderMsg(d.data()));
+    $('spChatMessages').scrollTop = $('spChatMessages').scrollHeight;
+  });
+}
+ 
+$('spChatClose').onclick = () => {
+  $('spChatWindow').style.display = 'none';
+  if (chatUnsubscribe) chatUnsubscribe();
+};
+ 
+function getChatId(a, b) {
+  return [a, b].sort().join('_');
+}
+ 
+function renderMsg(data) {
+  const div = document.createElement('div');
+  const mine = data.senderUid === currentUser.uid;
+  div.className = 'sp-msg ' + (mine ? 'sp-msg-me' : 'sp-msg-them');
+  div.innerHTML = `<span class="sp-msg-nick">${data.senderNick}</span><span class="sp-msg-text">${escHtml(data.text)}</span>`;
+  $('spChatMessages').appendChild(div);
+}
+ 
+async function sendMsg() {
+  const text = $('spChatInput').value.trim();
+  if (!text || !activeChatUid) return;
+  $('spChatInput').value = '';
+  const chatId = getChatId(currentUser.uid, activeChatUid);
+  await addDoc(collection(db, 'chats', chatId, 'messages'), {
+    text,
+    senderUid:  currentUser.uid,
+    senderNick: currentUser.displayName || currentUser.email,
+    receiverUid: activeChatUid,
+    time: serverTimestamp(),
+    read: false
+  });
+}
+ 
+$('spChatSend').onclick = sendMsg;
+$('spChatInput').onkeydown = e => { if (e.key === 'Enter') sendMsg(); };
+ 
+
+ 
+function listenForNewMessages() {
+  if (allUnsubscribe) allUnsubscribe();
+  const q = query(
+    collection(db, 'chats'),
+  );
+
+  checkUnread();
+  const interval = setInterval(checkUnread, 10000);
+  allUnsubscribe = () => clearInterval(interval);
+}
+ 
+async function checkUnread() {
+  if (!currentUser) return;
+
+  const usersSnap = await getDocs(collection(db, 'users'));
+  let hasUnread = false;
+  for (const d of usersSnap.docs) {
+    if (d.id === currentUser.uid) continue;
+    const chatId = getChatId(currentUser.uid, d.id);
+    const q = query(
+      collection(db, 'chats', chatId, 'messages'),
+      where('receiverUid', '==', currentUser.uid),
+      where('read', '==', false)
+    );
+    const snap = await getDocs(q);
+    if (!snap.empty) { hasUnread = true; break; }
+  }
+  const notif = $('stalkerNotif');
+  const panelOpen = $('stalkersPanelBox').style.display !== 'none';
+  notif.style.display = (hasUnread && !panelOpen) ? '' : 'none';
+}
+ 
+
+ 
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+ 
+function firebaseError(code) {
+  const map = {
+    'auth/email-already-in-use': 'Email уже используется',
+    'auth/invalid-email': 'Неверный email',
+    'auth/weak-password': 'Пароль слишком слабый (мин. 6 символов)',
+    'auth/user-not-found': 'Пользователь не найден',
+    'auth/wrong-password': 'Неверный пароль',
+    'auth/invalid-credential': 'Неверный email или пароль',
+  };
+  return map[code] || 'Ошибка: ' + code;
+}
+</script>
+
+
 
 </body>
 </html>
