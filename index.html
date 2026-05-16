@@ -233,19 +233,21 @@ async function generateKeyPair() {
 
 // Шифрование сообщения публичным ключом получателя
 async function encryptMsg(text, pubKeyB64) {
-  const raw = Uint8Array.from(atob(pubKeyB64), c => c.charCodeAt(0));
+  const binaryStr = atob(pubKeyB64.replace(/-/g, '+').replace(/_/g, '/'));
+  const raw = Uint8Array.from(binaryStr, c => c.charCodeAt(0));
   const key  = await crypto.subtle.importKey("spki", raw, { name: "RSA-OAEP", hash: "SHA-256" }, false, ["encrypt"]);
   const enc  = await crypto.subtle.encrypt({ name: "RSA-OAEP" }, key, new TextEncoder().encode(text));
   return btoa(String.fromCharCode(...new Uint8Array(enc)));
 }
-
 // Расшифровка своим приватным ключом
 async function decryptMsg(encB64) {
   const privKeyB64 = localStorage.getItem('privKey_' + currentUser.uid);
   if (!privKeyB64) return '[ключ не найден]';
-  const raw  = Uint8Array.from(atob(privKeyB64), c => c.charCodeAt(0));
+  const privBinary = atob(privKeyB64.replace(/-/g, '+').replace(/_/g, '/'));
+  const raw  = Uint8Array.from(privBinary, c => c.charCodeAt(0));
   const key  = await crypto.subtle.importKey("pkcs8", raw, { name: "RSA-OAEP", hash: "SHA-256" }, false, ["decrypt"]);
-  const dec  = await crypto.subtle.decrypt({ name: "RSA-OAEP" }, key, Uint8Array.from(atob(encB64), c => c.charCodeAt(0)));
+  const encBinary = atob(encB64.replace(/-/g, '+').replace(/_/g, '/'));
+  const dec  = await crypto.subtle.decrypt({ name: "RSA-OAEP" }, key, Uint8Array.from(encBinary, c => c.charCodeAt(0)));
   return new TextDecoder().decode(dec);
 }
 
