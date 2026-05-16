@@ -370,7 +370,11 @@ onAuthStateChanged(auth, async user => {
   if (user) {
     const userDoc = await getDoc(doc(db, 'users', user.uid));
     const userData = userDoc.data();
-    if (!userData || !userData.approved) {
+if (!userData) {
+      await signOut(auth);
+      return;
+    }
+    if (!userData.approved) {
       $('spAuth').style.display = 'none';
       $('spMain').style.display = 'none';
       $('spPending').style.display = '';
