@@ -135,8 +135,8 @@
 
   <div id="spAuth">
     <div class="sp-auth-tabs">
-      <button class="sp-tab active" id="tabLogin" onclick="spShowTab('login')">ВХОД</button>
-      <button class="sp-tab" id="tabReg" onclick="spShowTab('reg')">РЕГИСТРАЦИЯ</button>
+      <button class="sp-tab active" id="tabLogin">ВХОД</button>
+      <button class="sp-tab" id="tabReg">РЕГИСТРАЦИЯ</button>
     </div>
     <div id="spLoginForm">
       <input class="sp-input" id="spLoginEmail" type="email" placeholder="Email">
@@ -249,7 +249,8 @@ $('stalkersPanelBtn').onclick = () => {
   box.style.display = box.style.display === 'none' ? '' : 'none';
   $('stalkerNotif').style.display = 'none'; 
 };
-$('spClose').onclick = () => { $('stalkersPanelBox').style.display = 'none'; };
+$('tabLogin').onclick = () => spShowTab('login');
+$('tabReg').onclick   = () => spShowTab('reg');
  
 
  
