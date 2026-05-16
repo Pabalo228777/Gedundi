@@ -387,7 +387,7 @@ body {
 .dosimeter-container {
   position: fixed;
   bottom: 20px;
-  right: -60px;
+  right: 240px;
   z-index: 1000;
   font-family: 'Courier New', 'Fira Code', monospace;
   cursor: pointer;
