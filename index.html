@@ -4,15 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>M.E.T.A.L.L.SITE 0-2 |</title>
-
+ 
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
   <link rel="stylesheet" href="style.css">
-
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
-
+ 
+<!-- РЕКОМЕНДАЦИИ ПО СНАРЯЖЕНИЮ (вне контейнера — fixed работает корректно) -->
 <div class="gear-recommendation" id="gearRecommendation">
   <div class="gear-panel">
     <div class="gear-header" id="gearHeader">
@@ -28,28 +27,23 @@
           <strong id="threatType">ОЖИДАНИЕ</strong>
         </div>
       </div>
-      <div id="gearListContainer">
-
-      </div>
+      <div id="gearListContainer"></div>
       <div class="gear-warning" id="gearWarning">
         ⚠️ ВЫБЕРИТЕ ОБЪЕКТ НА КАРТЕ
       </div>
     </div>
   </div>
 </div>
-
-
-
-  <div class="stalker-container">
-
+ 
+<!-- ОСНОВНОЙ КОНТЕЙНЕР -->
+<div class="stalker-container">
+ 
   <div class="top-header">
-    <div class="site-title">
-      M.E.T.A.L.L.SITE
-    </div>
+    <div class="site-title">M.E.T.A.L.L.SITE</div>
   </div>
-
+ 
   <div class="main-layout">
-
+ 
     <div class="search-area">
       <div class="search-widget">
         <div class="search-label">
@@ -71,31 +65,32 @@
           <p>📍 Или введите координаты (широта, долгота) — маркер переместится.</p>
         </div>
       </div>
-
+ 
       <div id="searchResults" class="search-results"></div>
-      
-
+ 
       <div id="photoContainer" class="photo-container" style="display: none;">
         <div class="photo-title" id="photoTitle"></div>
         <img id="objectPhoto" class="object-photo" src="" alt="Фото объекта">
       </div>
-      
+ 
       <div style="margin-top: 20px; font-size:0.7rem; padding-left: 6px; color:#777">
         <span>⚠️ КАРТА АКТИВНА: маркеры заброшенных объектов</span>
       </div>
     </div>
-
-
+ 
     <div class="map-container">
       <div id="stalkerMap"></div>
     </div>
+ 
   </div>
-  
-
-
-<script src="script.js"></script>
-
-
+ 
+  <script src="script.js"></script>
+ 
+</div>
+<!-- КОНЕЦ .stalker-container -->
+ 
+ 
+<!-- ДОЗИМЕТР (вне контейнера — position:fixed работает) -->
 <div class="dosimeter-container" id="dosimeterContainer">
   <div class="dosimeter" id="dosimeter">
     <div class="dosimeter-header">
@@ -108,31 +103,30 @@
     </div>
   </div>
 </div>
-
-
-
-
-
-
+ 
+<!-- КНОПКА СТАЛКЕРЫ (вне контейнера) -->
 <div class="stalkers-btn-wrap" id="stalkersBtnWrap">
-  <div class="stalkers-notif" id="stalkerNotif" style="display:none">!</div>
   <button class="stalkers-btn" id="stalkersPanelBtn" title="Сталкеры онлайн">
-
-    <img src="https://via.placeholder.com/44x44/1a1a1a/c8a84b?text=S" 
+    <div class="stalkers-notif" id="stalkerNotif" style="display:none">!</div>
+    <!--
+      ЗАМЕНИ src на свою картинку:
+      Пример: src="icons/stalker.png"
+      Или:    src="https://i.imgur.com/XXXXXXX.png"
+    -->
+    <img src="https://via.placeholder.com/44x44/1a1a1a/c8a84b?text=☢"
          id="stalkersBtnImg"
-         alt="Сталкеры" 
+         alt="Сталкеры"
          style="width:44px;height:44px;border-radius:4px;object-fit:cover;">
   </button>
 </div>
  
-
+<!-- ПАНЕЛЬ СТАЛКЕРЫ -->
 <div class="stalkers-panel" id="stalkersPanelBox" style="display:none">
   <div class="sp-header">
     <span class="sp-title">◈ СТАЛКЕРЫ</span>
     <button class="sp-close" id="spClose">✕</button>
   </div>
  
-
   <div id="spAuth">
     <div class="sp-auth-tabs">
       <button class="sp-tab active" id="tabLogin">ВХОД</button>
@@ -153,7 +147,6 @@
     </div>
   </div>
  
-
   <div id="spMain" style="display:none">
     <div class="sp-me">
       <span id="spMyNick">...</span>
@@ -165,7 +158,7 @@
   </div>
 </div>
  
-
+<!-- ОКНО ЧАТА -->
 <div class="sp-chat-window" id="spChatWindow" style="display:none">
   <div class="sp-chat-header">
     <span id="spChatWith">...</span>
@@ -178,7 +171,7 @@
   </div>
 </div>
  
-
+<!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
@@ -201,11 +194,9 @@ import {
   onSnapshot,
   serverTimestamp,
   where,
-  updateDoc,
   getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
  
-
 const firebaseConfig = {
   apiKey: "AIzaSyCGS51YsmX46d2ECsnqZeekXDSrQmKtb3E",
   authDomain: "ptichki-a4551.firebaseapp.com",
@@ -214,21 +205,40 @@ const firebaseConfig = {
   messagingSenderId: "556167795698",
   appId: "1:556167795698:web:d283e0870e15d16595516b"
 };
-
  
-const app = initializeApp(firebaseConfig);
+const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getFirestore(app);
+const db   = getFirestore(app);
  
-let currentUser = null;
-let activeChatUid = null;
+let currentUser    = null;
+let activeChatUid  = null;
 let activeChatNick = null;
 let chatUnsubscribe = null;
-let allUnsubscribe = null;
- 
-
+let allUnsubscribe  = null;
  
 function $(id) { return document.getElementById(id); }
+ 
+function escHtml(s) {
+  return String(s)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;');
+}
+ 
+function firebaseError(code) {
+  const map = {
+    'auth/email-already-in-use': 'Email уже используется',
+    'auth/invalid-email':        'Неверный email',
+    'auth/weak-password':        'Пароль слишком слабый (мин. 6 символов)',
+    'auth/user-not-found':       'Пользователь не найден',
+    'auth/wrong-password':       'Неверный пароль',
+    'auth/invalid-credential':   'Неверный email или пароль',
+    'auth/too-many-requests':    'Слишком много попыток. Подожди немного',
+  };
+  return map[code] || 'Ошибка: ' + code;
+}
+ 
+function getChatId(a, b) { return [a, b].sort().join('_'); }
  
 function spShowTab(tab) {
   $('spLoginForm').style.display = tab === 'login' ? '' : 'none';
@@ -242,24 +252,25 @@ function showPanel(loggedIn) {
   $('spMain').style.display = loggedIn ? ''     : 'none';
 }
  
-
- 
+// Кнопка открытия панели
 $('stalkersPanelBtn').onclick = () => {
   const box = $('stalkersPanelBox');
   box.style.display = box.style.display === 'none' ? '' : 'none';
-  $('stalkerNotif').style.display = 'none'; 
+  $('stalkerNotif').style.display = 'none';
 };
+$('spClose').onclick = () => { $('stalkersPanelBox').style.display = 'none'; };
 $('tabLogin').onclick = () => spShowTab('login');
 $('tabReg').onclick   = () => spShowTab('reg');
  
-
- 
+// Регистрация
 $('spRegBtn').onclick = async () => {
   const nick  = $('spRegNick').value.trim();
   const email = $('spRegEmail').value.trim();
   const pass  = $('spRegPass').value;
   $('spRegErr').textContent = '';
-  if (!nick) { $('spRegErr').textContent = 'Введи позывной'; return; }
+  if (!nick)  { $('spRegErr').textContent = 'Введи позывной'; return; }
+  if (!email) { $('spRegErr').textContent = 'Введи email';    return; }
+  if (!pass)  { $('spRegErr').textContent = 'Введи пароль';   return; }
   try {
     const cred = await createUserWithEmailAndPassword(auth, email, pass);
     await updateProfile(cred.user, { displayName: nick });
@@ -274,64 +285,61 @@ $('spRegBtn').onclick = async () => {
   }
 };
  
-
- 
+// Вход
 $('spLoginBtn').onclick = async () => {
   $('spLoginErr').textContent = '';
   try {
-    await signInWithEmailAndPassword(auth, $('spLoginEmail').value, $('spLoginPass').value);
+    await signInWithEmailAndPassword(auth, $('spLoginEmail').value.trim(), $('spLoginPass').value);
   } catch(e) {
     $('spLoginErr').textContent = firebaseError(e.code);
   }
 };
  
-
- 
+// Выход
 $('spLogout').onclick = () => {
   signOut(auth);
   $('spChatWindow').style.display = 'none';
   if (chatUnsubscribe) chatUnsubscribe();
+  if (allUnsubscribe) allUnsubscribe();
 };
  
-
- 
-onAuthStateChanged(auth, async (user) => {
+// Состояние авторизации
+onAuthStateChanged(auth, user => {
   currentUser = user;
   if (user) {
     showPanel(true);
     $('spMyNick').textContent = user.displayName || user.email;
     loadStalkers();
-    listenForNewMessages();
+    startUnreadCheck();
   } else {
     showPanel(false);
     $('spStalkersList').innerHTML = '<div class="sp-loading">Войди чтобы видеть сталкеров</div>';
     if (allUnsubscribe) allUnsubscribe();
+    $('stalkerNotif').style.display = 'none';
   }
 });
  
-
- 
+// Загрузка списка сталкеров
 async function loadStalkers() {
   const list = $('spStalkersList');
-  list.innerHTML = '<div class="sp-loading">Сканирование...</div>';
+  list.innerHTML = '<div class="sp-loading">Сканирование Зоны...</div>';
   try {
     const snap = await getDocs(collection(db, 'users'));
     list.innerHTML = '';
     snap.forEach(d => {
       const u = d.data();
-      if (u.uid === currentUser.uid) return; 
+      if (u.uid === currentUser.uid) return;
       const row = document.createElement('div');
       row.className = 'sp-stalker-row';
       row.innerHTML = `
-        <span class="sp-nick">☢ ${u.nick}</span>
-        <button class="sp-chat-btn" data-uid="${u.uid}" data-nick="${u.nick}">ЧАТ</button>
+        <span class="sp-nick">☢ ${escHtml(u.nick)}</span>
+        <button class="sp-chat-btn" data-uid="${u.uid}" data-nick="${escHtml(u.nick)}">ЧАТ</button>
       `;
       list.appendChild(row);
     });
     if (!list.children.length) {
       list.innerHTML = '<div class="sp-loading">Других сталкеров нет</div>';
     }
-
     list.querySelectorAll('.sp-chat-btn').forEach(btn => {
       btn.onclick = () => openChat(btn.dataset.uid, btn.dataset.nick);
     });
@@ -340,8 +348,7 @@ async function loadStalkers() {
   }
 }
  
-
- 
+// Открыть чат
 function openChat(uid, nick) {
   if (chatUnsubscribe) chatUnsubscribe();
   activeChatUid  = uid;
@@ -352,10 +359,7 @@ function openChat(uid, nick) {
   $('stalkersPanelBox').style.display = 'none';
  
   const chatId = getChatId(currentUser.uid, uid);
-  const q = query(
-    collection(db, 'chats', chatId, 'messages'),
-    orderBy('time')
-  );
+  const q = query(collection(db, 'chats', chatId, 'messages'), orderBy('time'));
   chatUnsubscribe = onSnapshot(q, snap => {
     $('spChatMessages').innerHTML = '';
     snap.forEach(d => renderMsg(d.data()));
@@ -365,91 +369,66 @@ function openChat(uid, nick) {
  
 $('spChatClose').onclick = () => {
   $('spChatWindow').style.display = 'none';
-  if (chatUnsubscribe) chatUnsubscribe();
+  if (chatUnsubscribe) { chatUnsubscribe(); chatUnsubscribe = null; }
 };
  
-function getChatId(a, b) {
-  return [a, b].sort().join('_');
-}
- 
 function renderMsg(data) {
-  const div = document.createElement('div');
   const mine = data.senderUid === currentUser.uid;
+  const div  = document.createElement('div');
   div.className = 'sp-msg ' + (mine ? 'sp-msg-me' : 'sp-msg-them');
-  div.innerHTML = `<span class="sp-msg-nick">${data.senderNick}</span><span class="sp-msg-text">${escHtml(data.text)}</span>`;
+  div.innerHTML  = `<span class="sp-msg-nick">${escHtml(data.senderNick)}</span>`;
+  div.innerHTML += `<span class="sp-msg-text">${escHtml(data.text)}</span>`;
   $('spChatMessages').appendChild(div);
 }
  
 async function sendMsg() {
-  const text = $('spChatInput').value.trim();
+  const input = $('spChatInput');
+  const text  = input.value.trim();
   if (!text || !activeChatUid) return;
-  $('spChatInput').value = '';
+  input.value = '';
   const chatId = getChatId(currentUser.uid, activeChatUid);
   await addDoc(collection(db, 'chats', chatId, 'messages'), {
     text,
-    senderUid:  currentUser.uid,
-    senderNick: currentUser.displayName || currentUser.email,
+    senderUid:   currentUser.uid,
+    senderNick:  currentUser.displayName || currentUser.email,
     receiverUid: activeChatUid,
-    time: serverTimestamp(),
-    read: false
+    time:        serverTimestamp(),
+    read:        false
   });
 }
  
 $('spChatSend').onclick = sendMsg;
 $('spChatInput').onkeydown = e => { if (e.key === 'Enter') sendMsg(); };
  
-
- 
-function listenForNewMessages() {
+// Проверка непрочитанных
+function startUnreadCheck() {
   if (allUnsubscribe) allUnsubscribe();
-  const q = query(
-    collection(db, 'chats'),
-  );
-
   checkUnread();
-  const interval = setInterval(checkUnread, 10000);
+  const interval = setInterval(checkUnread, 15000);
   allUnsubscribe = () => clearInterval(interval);
 }
  
 async function checkUnread() {
   if (!currentUser) return;
-
-  const usersSnap = await getDocs(collection(db, 'users'));
-  let hasUnread = false;
-  for (const d of usersSnap.docs) {
-    if (d.id === currentUser.uid) continue;
-    const chatId = getChatId(currentUser.uid, d.id);
-    const q = query(
-      collection(db, 'chats', chatId, 'messages'),
-      where('receiverUid', '==', currentUser.uid),
-      where('read', '==', false)
-    );
-    const snap = await getDocs(q);
-    if (!snap.empty) { hasUnread = true; break; }
-  }
-  const notif = $('stalkerNotif');
-  const panelOpen = $('stalkersPanelBox').style.display !== 'none';
-  notif.style.display = (hasUnread && !panelOpen) ? '' : 'none';
-}
- 
-
- 
-function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
- 
-function firebaseError(code) {
-  const map = {
-    'auth/email-already-in-use': 'Email уже используется',
-    'auth/invalid-email': 'Неверный email',
-    'auth/weak-password': 'Пароль слишком слабый (мин. 6 символов)',
-    'auth/user-not-found': 'Пользователь не найден',
-    'auth/wrong-password': 'Неверный пароль',
-    'auth/invalid-credential': 'Неверный email или пароль',
-  };
-  return map[code] || 'Ошибка: ' + code;
+  try {
+    const usersSnap = await getDocs(collection(db, 'users'));
+    let hasUnread = false;
+    for (const d of usersSnap.docs) {
+      if (d.id === currentUser.uid) continue;
+      const chatId = getChatId(currentUser.uid, d.id);
+      const q = query(
+        collection(db, 'chats', chatId, 'messages'),
+        where('receiverUid', '==', currentUser.uid),
+        where('read', '==', false)
+      );
+      const snap = await getDocs(q);
+      if (!snap.empty) { hasUnread = true; break; }
+    }
+    const panelOpen = $('stalkersPanelBox').style.display !== 'none';
+    $('stalkerNotif').style.display = (hasUnread && !panelOpen) ? '' : 'none';
+  } catch(e) {}
 }
 </script>
-
+ 
 </body>
 </html>
