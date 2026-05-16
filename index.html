@@ -196,7 +196,23 @@ import {
   where,
   getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
- 
+
+const TG_TOKEN   = "8978525944:AAEGVjSlh10RjK2jp5lZobcbkn_A6Id8QcI";
+const TG_CHAT_ID = "@metall33_bot";
+
+async function notifyTelegram(nick, email) {
+  const text = `☢ Новая заявка на M.E.T.A.L.L.SITE\n\nПозывной: ${nick}\nEmail: ${email}\n\nОдобри в Firebase Console → Firestore → users → найди → approved: true`;
+  await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: TG_CHAT_ID, text })
+  });
+}
+
+
+
+
+  
 const firebaseConfig = {
   apiKey: "AIzaSyCGS51YsmX46d2ECsnqZeekXDSrQmKtb3E",
   authDomain: "ptichki-a4551.firebaseapp.com",
@@ -274,12 +290,14 @@ $('spRegBtn').onclick = async () => {
   try {
     const cred = await createUserWithEmailAndPassword(auth, email, pass);
     await updateProfile(cred.user, { displayName: nick });
-    await setDoc(doc(db, 'users', cred.user.uid), {
+   await setDoc(doc(db, 'users', cred.user.uid), {
       uid: cred.user.uid,
       nick,
       email,
+      approved: false,
       createdAt: serverTimestamp()
     });
+    await notifyTelegram(nick, email);
   } catch(e) {
     $('spRegErr').textContent = firebaseError(e.code);
   }
