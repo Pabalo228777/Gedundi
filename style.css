@@ -738,7 +738,7 @@ body {
 
 .stalkers-btn-wrap {
   position: fixed;
-  right: 18px;
+  right: 240px;
   top: 50%;
   transform: translateY(-50%);
   z-index: 9000;
@@ -794,7 +794,7 @@ body {
 
 .stalkers-panel {
   position: fixed;
-  right: 80px;
+  right: 300px;
   top: 50%;
   transform: translateY(-50%);
   width: 280px;
@@ -987,7 +987,7 @@ body {
 
 .sp-chat-window {
   position: fixed;
-  right: 80px;
+  right: 300px;
   bottom: 30px;
   width: 320px;
   height: 420px;
