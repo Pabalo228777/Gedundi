@@ -451,10 +451,17 @@ async function renderMsg(data) {
   const mine = data.senderUid === currentUser.uid;
   const div  = document.createElement('div');
   div.className = 'sp-msg ' + (mine ? 'sp-msg-me' : 'sp-msg-them');
-  let text = data.text;
-  if (!mine) {
-    text = await decryptMsg(data.text);
+
+  let text = mine ? (data.textSender || data.text) : data.text;
+
+  if (data.encrypted) {
+    try {
+      text = await decryptMsg(text);
+    } catch(e) {
+      text = mine ? data.text : '[не удалось расшифровать]';
+    }
   }
+
   div.innerHTML  = `<span class="sp-msg-nick">${escHtml(data.senderNick)}</span>`;
   div.innerHTML += `<span class="sp-msg-text">${escHtml(text)}</span>`;
   $('spChatMessages').appendChild(div);
@@ -465,18 +472,33 @@ async function sendMsg() {
   const text  = input.value.trim();
   if (!text || !activeChatUid) return;
   input.value = '';
-  const recipDoc = await getDoc(doc(db, 'users', activeChatUid));
-  const recipKey = recipDoc.data().publicKey;
-  const encrypted = await encryptMsg(text, recipKey);
   const chatId = getChatId(currentUser.uid, activeChatUid);
-  await addDoc(collection(db, 'chats', chatId, 'messages'), {
-    text:        encrypted,
-    senderUid:   currentUser.uid,
-    senderNick:  currentUser.displayName || currentUser.email,
-    receiverUid: activeChatUid,
-    time:        serverTimestamp(),
-    read:        false
-  });
+
+  try {
+    const recipDoc   = await getDoc(doc(db, 'users', activeChatUid));
+    const senderDoc  = await getDoc(doc(db, 'users', currentUser.uid));
+    const recipKey   = recipDoc.data()?.publicKey;
+    const senderKey  = senderDoc.data()?.publicKey;
+
+    let textForRecip  = text;
+    let textForSender = text;
+
+    if (recipKey)  textForRecip  = await encryptMsg(text, recipKey);
+    if (senderKey) textForSender = await encryptMsg(text, senderKey);
+
+    await addDoc(collection(db, 'chats', chatId, 'messages'), {
+      text:        textForRecip,   // для получателя
+      textSender:  textForSender,  // для отправителя
+      encrypted:   !!recipKey,
+      senderUid:   currentUser.uid,
+      senderNick:  currentUser.displayName || currentUser.email,
+      receiverUid: activeChatUid,
+      time:        serverTimestamp(),
+      read:        false
+    });
+  } catch(e) {
+    console.error('sendMsg error:', e);
+  }
 }
  
 $('spChatSend').onclick = sendMsg;
