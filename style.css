@@ -300,6 +300,10 @@ body {
   z-index: 1;
 }
 
+.leaflet-control-attribution {
+  display: none !important;
+}
+
 
 .site-footer {
   background: #242424;
