@@ -305,8 +305,6 @@ $('spRegBtn').onclick = async () => {
       createdAt: serverTimestamp()
     });
     await notifyTelegram(nick, email);
-    });
-    await notifyTelegram(nick, email);
   } catch(e) {
     $('spRegErr').textContent = firebaseError(e.code);
   }
