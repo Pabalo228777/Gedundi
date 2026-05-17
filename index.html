@@ -167,7 +167,6 @@
     <button class="sp-close" id="spChatClose">✕</button>
   </div>
   <div class="sp-chat-messages" id="spChatMessages"></div>
-  <div class="sp-chat-input-row">
     <div class="sp-chat-input-row">
   <label class="sp-img-btn" title="Прикрепить картинку">
     🖼
@@ -450,7 +449,10 @@ async function renderMsg(data) {
   const mine = data.senderUid === currentUser.uid;
   const div  = document.createElement('div');
   div.className = 'sp-msg ' + (mine ? 'sp-msg-me' : 'sp-msg-them');
+  div.dataset.msgId = data.time?.seconds || Date.now();
+
   div.innerHTML = `<span class="sp-msg-nick">${escHtml(data.senderNick)}</span>`;
+
   if (data.imageUrl) {
     div.innerHTML += `<img class="sp-chat-img" src="${data.imageUrl}" onclick="window.open('${data.imageUrl}')">`;
   } else {
@@ -461,8 +463,71 @@ async function renderMsg(data) {
     }
     div.innerHTML += `<span class="sp-msg-text">${escHtml(text)}</span>`;
   }
+
+  // Реакции
+  const reactions = data.reactions || {};
+  const reactBar  = document.createElement('div');
+  reactBar.className = 'sp-reactions';
+
+  // Показать существующие реакции
+  Object.entries(reactions).forEach(([emoji, users]) => {
+    if (users.length === 0) return;
+    const btn = document.createElement('button');
+    btn.className = 'sp-reaction-btn' + (users.includes(currentUser.uid) ? ' active' : '');
+    btn.textContent = `${emoji} ${users.length}`;
+    btn.onclick = () => toggleReaction(data.msgId, emoji, users);
+    reactBar.appendChild(btn);
+  });
+
+  // Кнопка добавить реакцию
+  const addBtn = document.createElement('button');
+  addBtn.className = 'sp-reaction-add';
+  addBtn.textContent = '😊';
+  addBtn.onclick = (e) => showEmojiPicker(e, data.msgId);
+  reactBar.appendChild(addBtn);
+
+  div.appendChild(reactBar);
   $('spChatMessages').appendChild(div);
 }
+
+
+const EMOJIS = ['👍','👎','❤️','😂','😮','😢','🔥','☢️','👻','💀'];
+
+function showEmojiPicker(e, msgId) {
+  document.querySelectorAll('.sp-emoji-picker').forEach(p => p.remove());
+  const picker = document.createElement('div');
+  picker.className = 'sp-emoji-picker';
+  EMOJIS.forEach(emoji => {
+    const btn = document.createElement('button');
+    btn.textContent = emoji;
+    btn.onclick = () => {
+      toggleReaction(msgId, emoji, []);
+      picker.remove();
+    };
+    picker.appendChild(btn);
+  });
+  e.target.parentNode.appendChild(picker);
+  setTimeout(() => document.addEventListener('click', () => picker.remove(), { once: true }), 100);
+}
+
+async function toggleReaction(msgId, emoji, currentUsers) {
+  if (!msgId || !activeChatUid) return;
+  const chatId = getChatId(currentUser.uid, activeChatUid);
+  const msgRef = doc(db, 'chats', chatId, 'messages', msgId);
+  const msgDoc = await getDoc(msgRef);
+  if (!msgDoc.exists()) return;
+
+  const reactions = msgDoc.data().reactions || {};
+  const users = reactions[emoji] || [];
+  const idx   = users.indexOf(currentUser.uid);
+
+  if (idx === -1) users.push(currentUser.uid);
+  else users.splice(idx, 1);
+
+  reactions[emoji] = users;
+  await updateDoc(msgRef, { reactions });
+}
+  
  
 async function sendMsg() {
   const input = $('spChatInput');
