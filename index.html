@@ -104,15 +104,10 @@
   </div>
 </div>
  
-<!-- КНОПКА СТАЛКЕРЫ (вне контейнера) -->
+
 <div class="stalkers-btn-wrap" id="stalkersBtnWrap">
   <button class="stalkers-btn" id="stalkersPanelBtn" title="Сталкеры онлайн">
     <div class="stalkers-notif" id="stalkerNotif" style="display:none">!</div>
-    <!--
-      ЗАМЕНИ src на свою картинку:
-      Пример: src="icons/stalker.png"
-      Или:    src="https://i.imgur.com/XXXXXXX.png"
-    -->
     <img src="Metall_birds.png""
          id="stalkersBtnImg"
          alt="Сталкеры"
@@ -235,7 +230,7 @@ async function generateKeyPair() {
   };
 }
 
-// Шифрование сообщения публичным ключом получателя
+
 async function encryptMsg(text, pubKeyB64) {
   const binaryStr = atob(pubKeyB64.replace(/-/g, '+').replace(/_/g, '/'));
   const raw = Uint8Array.from(binaryStr, c => c.charCodeAt(0));
@@ -243,7 +238,7 @@ async function encryptMsg(text, pubKeyB64) {
   const enc  = await crypto.subtle.encrypt({ name: "RSA-OAEP" }, key, new TextEncoder().encode(text));
   return btoa(String.fromCharCode(...new Uint8Array(enc)));
 }
-// Расшифровка своим приватным ключом
+
 async function decryptMsg(encB64) {
   const privKeyB64 = localStorage.getItem('privKey_' + currentUser.uid);
   if (!privKeyB64) return '[ключ не найден]';
@@ -312,7 +307,7 @@ function showPanel(loggedIn) {
   $('spMain').style.display = loggedIn ? ''     : 'none';
 }
  
-// Кнопка открытия панели
+
 $('stalkersPanelBtn').onclick = () => {
   const box = $('stalkersPanelBox');
   box.style.display = box.style.display === 'none' ? '' : 'none';
@@ -322,7 +317,7 @@ $('spClose').onclick = () => { $('stalkersPanelBox').style.display = 'none'; };
 $('tabLogin').onclick = () => spShowTab('login');
 $('tabReg').onclick   = () => spShowTab('reg');
  
-// Регистрация
+
 $('spRegBtn').onclick = async () => {
   const nick  = $('spRegNick').value.trim();
   const email = $('spRegEmail').value.trim();
@@ -368,7 +363,7 @@ $('spLogout').onclick = () => {
   if (allUnsubscribe) allUnsubscribe();
 };
  
-// Состояние авторизации
+
 onAuthStateChanged(auth, async user => {
   currentUser = user;
   if (user) {
@@ -398,7 +393,7 @@ if (!userData) {
   }
 });
  
-// Загрузка списка сталкеров
+
 async function loadStalkers() {
   const list = $('spStalkersList');
   list.innerHTML = '<div class="sp-loading">Сканирование Зоны...</div>';
@@ -427,7 +422,7 @@ async function loadStalkers() {
   }
 }
  
-// Открыть чат
+
 function openChat(uid, nick) {
   if (chatUnsubscribe) chatUnsubscribe();
   activeChatUid  = uid;
@@ -538,11 +533,6 @@ $('spImgInput').onchange = async (e) => {
     console.error('Image upload error:', e);
   }
 };
-
-
-поподробней что значит добавь после
-```
-
   
 // Проверка непрочитанных
 function startUnreadCheck() {
