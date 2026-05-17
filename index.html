@@ -159,7 +159,30 @@
     </div>
   </div>
 </div>
- 
+
+<!-- ОКНО ПРОФИЛЯ -->
+<div class="sp-profile-window" id="spProfileWindow" style="display:none">
+  <div class="sp-profile-header">
+    <span class="sp-title">◈ МОЙ ПРОФИЛЬ</span>
+    <button class="sp-close" id="spProfileClose">✕</button>
+  </div>
+  <div class="sp-profile-body">
+    <div class="sp-avatar-wrap">
+      <img id="spAvatarImg" src="https://placehold.co/80x80/1a1a1a/c8a84b?text=☢" class="sp-avatar">
+      <label class="sp-avatar-edit" title="Изменить аватарку">
+        ✏️
+        <input type="file" id="spAvatarInput" accept="image/*" style="display:none">
+      </label>
+    </div>
+    <div class="sp-profile-nick" id="spProfileNick">...</div>
+    <textarea class="sp-profile-bio" id="spProfileBio" placeholder="Расскажи о себе..."></textarea>
+    <button class="sp-btn" id="spProfileSave">СОХРАНИТЬ</button>
+    <div class="sp-err" id="spProfileErr"></div>
+  </div>
+</div>
+
+
+  
 <!-- ОКНО ЧАТА -->
 <div class="sp-chat-window" id="spChatWindow" style="display:none">
   <div class="sp-chat-header">
