@@ -199,7 +199,8 @@ import {
   onSnapshot,
   serverTimestamp,
   where,
-  getDoc
+  getDoc,
+  updateDoc   
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 
@@ -435,7 +436,7 @@ function openChat(uid, nick) {
   const q = query(collection(db, 'chats', chatId, 'messages'), orderBy('time'));
   chatUnsubscribe = onSnapshot(q, snap => {
     $('spChatMessages').innerHTML = '';
-    snap.forEach(d => renderMsg(d.data()));
+    snap.forEach(d => renderMsg({ ...d.data(), msgId: d.id }));
     $('spChatMessages').scrollTop = $('spChatMessages').scrollHeight;
   });
 }
