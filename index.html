@@ -506,7 +506,7 @@ async function sendMsg() {
 $('spChatSend').onclick = sendMsg;
 $('spChatInput').onkeydown = e => { if (e.key === 'Enter') sendMsg(); };
 
-2. Найди `$('spChatSend').onclick = sendMsg;` и сразу после добавь:
+`$('spChatSend').onclick = sendMsg;` и сразу после добавь:
 js
 
 ```js
