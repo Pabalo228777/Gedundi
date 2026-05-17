@@ -495,20 +495,32 @@ async function renderMsg(data) {
 const EMOJIS = ['👍','👎','❤️','😂','😮','😢','🔥','☢️','👻','💀'];
 
 function showEmojiPicker(e, msgId) {
+  e.stopPropagation();
   document.querySelectorAll('.sp-emoji-picker').forEach(p => p.remove());
   const picker = document.createElement('div');
   picker.className = 'sp-emoji-picker';
+  picker.style.position = 'absolute';
+  picker.style.bottom = '24px';
+  picker.style.left = '0';
   EMOJIS.forEach(emoji => {
     const btn = document.createElement('button');
     btn.textContent = emoji;
-    btn.onclick = () => {
+    btn.onclick = (ev) => {
+      ev.stopPropagation();
       toggleReaction(msgId, emoji, []);
       picker.remove();
     };
     picker.appendChild(btn);
   });
-  e.target.parentNode.appendChild(picker);
-  setTimeout(() => document.addEventListener('click', () => picker.remove(), { once: true }), 100);
+  const wrap = document.createElement('div');
+  wrap.style.position = 'relative';
+  wrap.style.display = 'inline-block';
+  e.target.parentNode.insertBefore(wrap, e.target);
+  wrap.appendChild(e.target);
+  wrap.appendChild(picker);
+  setTimeout(() => {
+    document.addEventListener('click', () => picker.remove(), { once: true });
+  }, 100);
 }
 
 async function toggleReaction(msgId, emoji, currentUsers) {
