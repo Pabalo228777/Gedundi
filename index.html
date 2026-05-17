@@ -173,9 +173,13 @@
   </div>
   <div class="sp-chat-messages" id="spChatMessages"></div>
   <div class="sp-chat-input-row">
-    <input class="sp-chat-input" id="spChatInput" placeholder="Сообщение...">
-    <button class="sp-chat-send" id="spChatSend">▶</button>
-  </div>
+    <div class="sp-chat-input-row">
+  <label class="sp-img-btn" title="Прикрепить картинку">
+    🖼
+    <input type="file" id="spImgInput" accept="image/*" style="display:none">
+  </label>
+  <input class="sp-chat-input" id="spChatInput" placeholder="Сообщение...">
+  <button class="sp-chat-send" id="spChatSend">▶</button>
 </div>
  
 <!-- FIREBASE -->
@@ -451,19 +455,17 @@ async function renderMsg(data) {
   const mine = data.senderUid === currentUser.uid;
   const div  = document.createElement('div');
   div.className = 'sp-msg ' + (mine ? 'sp-msg-me' : 'sp-msg-them');
-
-  let text = mine ? (data.textSender || data.text) : data.text;
-
-  if (data.encrypted) {
-    try {
-      text = await decryptMsg(text);
-    } catch(e) {
-      text = mine ? data.text : '[не удалось расшифровать]';
+  div.innerHTML = `<span class="sp-msg-nick">${escHtml(data.senderNick)}</span>`;
+  if (data.imageUrl) {
+    div.innerHTML += `<img class="sp-chat-img" src="${data.imageUrl}" onclick="window.open('${data.imageUrl}')">`;
+  } else {
+    let text = mine ? (data.textSender || data.text) : data.text;
+    if (data.encrypted) {
+      try { text = await decryptMsg(text); }
+      catch(e) { text = mine ? data.text : '[не удалось расшифровать]'; }
     }
+    div.innerHTML += `<span class="sp-msg-text">${escHtml(text)}</span>`;
   }
-
-  div.innerHTML  = `<span class="sp-msg-nick">${escHtml(data.senderNick)}</span>`;
-  div.innerHTML += `<span class="sp-msg-text">${escHtml(text)}</span>`;
   $('spChatMessages').appendChild(div);
 }
  
@@ -503,7 +505,45 @@ async function sendMsg() {
  
 $('spChatSend').onclick = sendMsg;
 $('spChatInput').onkeydown = e => { if (e.key === 'Enter') sendMsg(); };
- 
+
+2. Найди `$('spChatSend').onclick = sendMsg;` и сразу после добавь:
+js
+
+```js
+$('spImgInput').onchange = async (e) => {
+  const file = e.target.files[0];
+  if (!file || !activeChatUid) return;
+  e.target.value = '';
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', 'vipd07im');
+    const res  = await fetch('https://api.cloudinary.com/v1_1/drnch0s5x/image/upload', {
+      method: 'POST',
+      body: formData
+    });
+    const data = await res.json();
+    const chatId = getChatId(currentUser.uid, activeChatUid);
+    await addDoc(collection(db, 'chats', chatId, 'messages'), {
+      text:        '',
+      imageUrl:    data.secure_url,
+      encrypted:   false,
+      senderUid:   currentUser.uid,
+      senderNick:  currentUser.displayName || currentUser.email,
+      receiverUid: activeChatUid,
+      time:        serverTimestamp(),
+      read:        false
+    });
+  } catch(e) {
+    console.error('Image upload error:', e);
+  }
+};
+
+
+поподробней что значит добавь после
+```
+
+  
 // Проверка непрочитанных
 function startUnreadCheck() {
   if (allUnsubscribe) allUnsubscribe();
